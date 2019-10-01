@@ -2,21 +2,130 @@ const Productos = artifacts.require("Productos");
 
 contract("Productos", async (accounts) => {
 
-	it ("Añadir 2 frutas, 2 animales, 2 verduras...", async() => {
+it ("Añadir 6 producto", async() => {
 
-		let instance = await Productos.deployed();
-		instance._addProduct("Manzana", "Fruta", 1);
-		instance._addProduct("Naranja", "Fruta", 2);
-		instance._addProduct("Cerdo", "Animales", 3);
-		instance._addProduct("Vaca", "Animales", 4);
-		instance._addProduct("Lechuga", "Verduras", 5);
-		instance._addProduct("Brocoli", "Verduras", 6);
-	
-	});
+	let exec = await Productos.deployed();
+	await exec._addProduct.sendTransaction("Manzana", "Fruta", 1);
+	await exec._addProduct.sendTransaction("Pera", "Fruta", 2);
+	await exec._addProduct.sendTransaction("Leche", "Lacteos", 3);
+	await exec._addProduct.sendTransaction("Yogurt", "Lacteos", 4);
+	await exec._addProduct.sendTransaction("Vaca", "Animal", 5);
+	await exec._addProduct.sendTransaction("Cerdo", "Animal", 6);
 
-	it ("Buscar por nombre...", async() => {
-		let instance = await Productos.deployed();
-	
-	});
+});
+
+it("Recuperar 3 producto por el nombre", async() => {
+
+	let exec = await Productos.deployed();
+	let frutas = await exec._locateName.call("Manzana");
+	assert.equal(frutas[0], "Manzana"); 
+	assert.equal(frutas[1], "Fruta");
+	assert.equal(frutas[2], 1); 
+
+	let lacteos = await exec._locateName.call("Leche");
+	assert.equal(lacteos[0], "Leche"); 
+	assert.equal(lacteos[1], "Lacteos");
+	assert.equal(lacteos[2], 3); 
+
+	let animales = await exec._locateName.call("Vaca");
+	assert.equal(animales[0], "Vaca"); 
+	assert.equal(animales[1], "Animal");
+	assert.equal(animales[2], 5); 
+
+});
+
+// ESTE TEST ES ERRONEO, NO POR EL TEST EN SI SINO POR QUE _locatetype NO DEVUELVE LO QUE QUIERO.
+
+it("Recuperar 3 producto por el tipo", async() => {
+
+	let exec = await Productos.deployed();
+	let frutas = await exec._locateType.call("Fruta");
+	assert.equal(frutas[0], "Pera"); 
+	assert.equal(frutas[1], "Fruta");
+	assert.equal(frutas[2], 2); 
+
+	let lacteos = await exec._locateType.call("Lacteos");
+	assert.equal(lacteos[0], "Yogurt"); 
+	assert.equal(lacteos[1], "Lacteos");
+	assert.equal(lacteos[2], 4); 
+
+	let animales = await exec._locateType.call("Animal");
+	assert.equal(animales[0], "Cerdo"); 
+	assert.equal(animales[1], "Animal");
+	assert.equal(animales[2], 6); 
+
+});
+
+it("Recuperar 3 producto por el id", async() => {
+
+	let exec = await Productos.deployed();
+	let frutas = await exec._locateId.call(1);
+	assert.equal(frutas[0], "Manzana"); 
+	assert.equal(frutas[1], "Fruta");
+	assert.equal(frutas[2], 1); 
+
+	let lacteos = await exec._locateId.call(3);
+	assert.equal(lacteos[0], "Leche"); 
+	assert.equal(lacteos[1], "Lacteos");
+	assert.equal(lacteos[2], 3); 
+
+	let animales = await exec._locateId.call(5);
+	assert.equal(animales[0], "Vaca"); 
+	assert.equal(animales[1], "Animal");
+	assert.equal(animales[2], 5); 
+
+});
+
+it("Añadir a alguien que ya existe 2 OK!", async() => {
+
+	let exec = await Productos.deployed();
+
+	try{
+		await exec._addProduct.sendTransaction("Manzana", "Fruta", 1);
+	}catch(e){
+		console.log("OK!");
+	}
+
+	try{
+		await exec._addProduct.sendTransaction("Vaca", "Animal", 5);
+	}catch(e){
+		console.log("OK!");
+	}
+
+})
+
+it("Buscar a alguien que no existe 2 OK!", async() => {
+
+
+	let exec = await Productos.deployed();
+
+	try{
+		await exec._locateName.call("Cactus");
+	}catch(e){
+		console.log("OK!");
+	}
+
+	try{
+		await exec._locateId.call(12345);
+	}catch(e){
+		console.log("OK!");
+	}
+
+})
+
+/*
+it("Borrar un dato", async() => {
+
+	let exec = await Productos.deployed();
+	await exec._deleteProduct.call(1);
+	let estas = await exec._locateId.call(1);
+	console.log("ME HAN BORRADO", estas[0], "\n");
+	console.log("ME HAN BORRADO", estas[1], "\n");
+	console.log("ME HAN BORRADO", estas[2], "\n");
+	assert.empty(estas); 
+
+});
+*/
+
 
 });
