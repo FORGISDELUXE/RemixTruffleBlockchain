@@ -2,7 +2,7 @@ const Productos = artifacts.require("Productos");
 
 contract("Productos", async (accounts) => {
 
-it ("Añadir 6 producto", async() => {
+it ("TEST 1: Añadir 6 producto.", async() => {
 
 	let exec = await Productos.deployed();
 	await exec._addProduct.sendTransaction("Manzana", "Fruta", 1);
@@ -14,7 +14,7 @@ it ("Añadir 6 producto", async() => {
 
 });
 
-it("Recuperar 3 producto por el nombre", async() => {
+it("TEST 2: Recuperar 3 producto por el nombre.", async() => {
 
 	let exec = await Productos.deployed();
 	let frutas = await exec._locateName.call("Manzana");
@@ -36,7 +36,7 @@ it("Recuperar 3 producto por el nombre", async() => {
 
 // ESTE TEST ES ERRONEO, NO POR EL TEST EN SI SINO POR QUE _locatetype NO DEVUELVE LO QUE QUIERO.
 
-it("Recuperar 3 producto por el tipo", async() => {
+it("TEST 3: Recuperar 3 producto por el tipo.", async() => {
 
 	let exec = await Productos.deployed();
 	let frutas = await exec._locateType.call("Fruta");
@@ -56,7 +56,7 @@ it("Recuperar 3 producto por el tipo", async() => {
 
 });
 
-it("Recuperar 3 producto por el id", async() => {
+it("TEST 4: Recuperar 3 producto por el id.", async() => {
 
 	let exec = await Productos.deployed();
 	let frutas = await exec._locateId.call(1);
@@ -76,56 +76,37 @@ it("Recuperar 3 producto por el id", async() => {
 
 });
 
-it("Añadir a alguien que ya existe 2 OK!", async() => {
+it("TEST 5: Añadir a alguien que ya existe.", async() => {
 
 	let exec = await Productos.deployed();
-
-	try{
-		await exec._addProduct.sendTransaction("Manzana", "Fruta", 1);
-	}catch(e){
-		console.log("OK!");
-	}
-
-	try{
-		await exec._addProduct.sendTransaction("Vaca", "Animal", 5);
-	}catch(e){
-		console.log("OK!");
-	}
+	exec._addProduct.sendTransaction("Manzana", "Fruta", 1).then((response)=>{console.log(responde);},
+	(error)=>{
+		assert(error.message.indexOf('revert') >= 0, "Este producto ya existe.")
+	});
 
 })
 
-it("Buscar a alguien que no existe 2 OK!", async() => {
+it("TEST 6: Buscar a alguien que no existe.", async() => {
 
 
 	let exec = await Productos.deployed();
-
-	try{
-		await exec._locateName.call("Cactus");
-	}catch(e){
-		console.log("OK!");
-	}
-
-	try{
-		await exec._locateId.call(12345);
-	}catch(e){
-		console.log("OK!");
-	}
+	exec._locateName.call("Cactus").then((response)=>{console.log(responde);},
+	(error)=>{
+		assert(error.message.indexOf('revert') >= 0, "Este producto no existe.")
+	});
+	
 
 })
 
-/*
-it("Borrar un dato", async() => {
+it("TEST 7: Borrar un dato." , async() => {
 
 	let exec = await Productos.deployed();
-	await exec._deleteProduct.call(1);
-	let estas = await exec._locateId.call(1);
-	console.log("ME HAN BORRADO", estas[0], "\n");
-	console.log("ME HAN BORRADO", estas[1], "\n");
-	console.log("ME HAN BORRADO", estas[2], "\n");
-	assert.empty(estas); 
+	exec._deleteProduct.call(1).then((response)=>{console.log(responde);},
+	(error)=>{
+		assert(error.message.indexOf('revert') >= 0, "No se ha borrado correctamente.")
+	});	
 
 });
-*/
 
 
 });
